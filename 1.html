@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Match Finder</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+</head>
+<body class="bg-gradient-to-br from-purple-900 via-slate-900 to-black text-white min-h-screen flex items-center justify-center p-4">
+
+  <div class="max-w-md w-full bg-slate-800/90 backdrop-blur-md rounded-2xl p-6 border border-purple-500/20 shadow-2xl">
+    
+    <!-- Step 1 -->
+    <div id="step-1" class="quiz-step">
+      <span class="text-xs text-purple-400 font-semibold uppercase tracking-wider">Step 1 of 3</span>
+      <h2 class="text-xl font-bold mt-1 mb-4">What age range do you prefer?</h2>
+      <div class="space-y-3">
+        <button onclick="nextStep(2)" class="w-full py-3 bg-slate-700/60 hover:bg-purple-600 rounded-xl font-medium transition text-left px-4 border border-slate-600">18 - 25 years old</button>
+        <button onclick="nextStep(2)" class="w-full py-3 bg-slate-700/60 hover:bg-purple-600 rounded-xl font-medium transition text-left px-4 border border-slate-600">26 - 35 years old</button>
+        <button onclick="nextStep(2)" class="w-full py-3 bg-slate-700/60 hover:bg-purple-600 rounded-xl font-medium transition text-left px-4 border border-slate-600">36+ years old</button>
+      </div>
+    </div>
+
+    <!-- Step 2 -->
+    <div id="step-2" class="quiz-step hidden">
+      <span class="text-xs text-purple-400 font-semibold uppercase tracking-wider">Step 2 of 3</span>
+      <h2 class="text-xl font-bold mt-1 mb-4">Distance preference?</h2>
+      <div class="space-y-3">
+        <button onclick="nextStep(3)" class="w-full py-3 bg-slate-700/60 hover:bg-purple-600 rounded-xl font-medium transition text-left px-4 border border-slate-600">Within 5 km</button>
+        <button onclick="nextStep(3)" class="w-full py-3 bg-slate-700/60 hover:bg-purple-600 rounded-xl font-medium transition text-left px-4 border border-slate-600">Within 20 km</button>
+        <button onclick="nextStep(3)" class="w-full py-3 bg-slate-700/60 hover:bg-purple-600 rounded-xl font-medium transition text-left px-4 border border-slate-600">Same country</button>
+      </div>
+    </div>
+
+    <!-- Step 3 (Loader / Redirect) -->
+    <div id="step-3" class="quiz-step hidden text-center py-6">
+      <div class="w-12 h-12 border-4 border-purple-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+      <h2 class="text-lg font-bold">Matching nearby profiles...</h2>
+      <p class="text-slate-400 text-sm mt-2">Connecting to destination link...</p>
+    </div>
+
+  </div>
+
+  <script>
+    const SMARTLINK_BASE = "https://YOUR_KEITARO_DOMAIN.com/click.php?key=YOUR_SMARTLINK_KEY";
+
+    window.OneSignalDeferred = window.OneSignalDeferred || [];
+    OneSignalDeferred.push(async function(OneSignal) {
+      await OneSignal.init({ appId: "YOUR_ONESIGNAL_APP_ID" });
+    });
+
+    function getSmartlinkUrl() {
+      const currentParams = window.location.search;
+      return currentParams ? `${SMARTLINK_BASE}&${currentParams.substring(1)}` : SMARTLINK_BASE;
+    }
+
+    async function nextStep(step) {
+      document.querySelectorAll('.quiz-step').forEach(el => el.classList.add('hidden'));
+      document.getElementById(`step-${step}`).classList.remove('hidden');
+
+      if (step === 3) {
+        try {
+          if (window.OneSignal) {
+            await OneSignal.Notifications.requestPermission();
+          }
+        } catch (e) {
+          console.log("Push skipped");
+        } finally {
+          setTimeout(() => {
+            window.location.href = getSmartlinkUrl();
+          }, 1500);
+        }
+      }
+    }
+  </script>
+</body>
+</html>

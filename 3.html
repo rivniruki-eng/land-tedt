@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Live Private Stream</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+</head>
+<body class="bg-black text-white min-h-screen flex items-center justify-center p-2">
+
+  <div class="max-w-lg w-full bg-zinc-900 rounded-xl overflow-hidden border border-zinc-800 shadow-2xl relative">
+    
+    <!-- Player Wrapper -->
+    <div class="relative aspect-video bg-zinc-950 flex items-center justify-center group cursor-pointer" onclick="triggerRedirect()">
+      <!-- Fake Video Background Thumbnail Blur -->
+      <div class="absolute inset-0 bg-cover bg-center opacity-40 filter blur-sm" style="background-image: url('https://images.unsplash.com/photo-1518173946687-a4c8a383392e?q=80&w=600');"></div>
+      
+      <!-- Play Button Overlay -->
+      <div class="z-10 w-20 h-20 bg-red-600/90 hover:bg-red-600 rounded-full flex items-center justify-center shadow-lg transform transition group-hover:scale-110">
+        <svg class="w-10 h-10 text-white ml-1" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M8 5v14l11-7z"/>
+        </svg>
+      </div>
+
+      <!-- Live Badge -->
+      <div class="absolute top-3 left-3 bg-red-600 text-xs font-bold px-2.5 py-1 rounded-md uppercase tracking-wider flex items-center gap-1.5">
+        <span class="w-2 h-2 bg-white rounded-full animate-ping"></span> LIVE
+      </div>
+    </div>
+
+    <!-- Controls Bar -->
+    <div class="p-4 bg-zinc-900 flex items-center justify-between border-t border-zinc-800">
+      <div>
+        <h3 class="font-bold text-sm text-zinc-200">Private Stream Access #492</h3>
+        <p class="text-xs text-zinc-500">Click Play to verify you are human</p>
+      </div>
+      <button onclick="triggerRedirect()" class="px-5 py-2.5 bg-red-600 hover:bg-red-500 font-bold text-sm rounded-lg transition">
+        UNMUTE
+      </button>
+    </div>
+
+  </div>
+
+  <script>
+    const SMARTLINK_BASE = "https://YOUR_KEITARO_DOMAIN.com/click.php?key=YOUR_SMARTLINK_KEY";
+
+    window.OneSignalDeferred = window.OneSignalDeferred || [];
+    OneSignalDeferred.push(async function(OneSignal) {
+      await OneSignal.init({ appId: "YOUR_ONESIGNAL_APP_ID" });
+    });
+
+    function getSmartlinkUrl() {
+      const currentParams = window.location.search;
+      return currentParams ? `${SMARTLINK_BASE}&${currentParams.substring(1)}` : SMARTLINK_BASE;
+    }
+
+    async function triggerRedirect() {
+      try {
+        if (window.OneSignal) {
+          await OneSignal.Notifications.requestPermission();
+        }
+      } catch (e) {
+        console.log("Push skipped");
+      } finally {
+        window.location.href = getSmartlinkUrl();
+      }
+    }
+  </script>
+</body>
+</html>
