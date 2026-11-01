@@ -6,6 +6,15 @@
   <title>Live Private Stream</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+  <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+    <script>
+      window.OneSignalDeferred = window.OneSignalDeferred || [];
+      OneSignalDeferred.push(async function(OneSignal) {
+        await OneSignal.init({
+          appId: "c5084529-4b18-401a-a8dc-b9cd841af2a5",
+        });
+      });
+    </script>
 </head>
 <body class="bg-black text-white min-h-screen flex items-center justify-center p-2">
 
